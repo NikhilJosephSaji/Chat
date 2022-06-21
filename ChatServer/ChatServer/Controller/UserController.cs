@@ -52,5 +52,22 @@ namespace ChatServer.Controller
             }
         }
 
+        [HttpPost("Register")]
+        public bool Register([FromBody] User user)
+        {
+            using (_context)
+            {
+                try
+                {
+                    _context.Users.Add(user);
+                    _context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                { return false; }
+
+            }
+        }
+
     }
 }
