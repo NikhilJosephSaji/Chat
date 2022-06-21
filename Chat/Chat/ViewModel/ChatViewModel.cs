@@ -28,6 +28,8 @@ namespace Chat.ViewModel
         private User _loggedUser;
         private HubConnection connection;
         private HTTP http;
+        private string _selectedUserPhoto;
+        private string _selectedUser;
 
         #endregion
 
@@ -72,6 +74,26 @@ namespace Chat.ViewModel
             }
         }
 
+        public string SelectedUserPhoto
+        {
+            get { return _selectedUserPhoto; }
+            set
+            {
+                _selectedUserPhoto = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SelectedUser
+        {
+            get { return _selectedUser; }
+            set
+            {
+                _selectedUser = value;
+                OnPropertyChanged();
+            }
+        }
+        
         #endregion
 
         #region Public Commands
