@@ -7,10 +7,16 @@
         mc:Ignorable="d"
         Title="Window" Height="450" Width="800">
     <Grid>
-        <StackPanel>
-            <Button x:Name="connectButton" Content="connect" Click="connectButton_Click"/>
-            <Button x:Name="sendButton" Content="Send" Click="sendButton_Click"/>
-            <ListBox x:Name="messagesList"/>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+            <ComboBox x:Name="Userlist" ScrollViewer.CanContentScroll="True" MaxHeight="500"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0">
+            <TextBox x:Name="User" Text="Type Log User"  Height="22"/>
+            <TextBox x:Name="Password" Text="Type Password"  Height="22"/>
+            <Button x:Name="connectButton" Content="Login" Click="connectButton_Click"/>
+            <TextBox x:Name="Msg" Text="Type Message" Height="22"/>
+            <Button x:Name="sendButton" Content="Send Message" Click="sendButton_Click"/>
+            <ListBox x:Name="messagesList" ScrollViewer.CanContentScroll="True" MaxHeight="500"/>
         </StackPanel>
     </Grid>
 </Window>
