@@ -29,7 +29,7 @@ namespace ChatServer.Hubs
                 if (!_ConnectionsMap.ContainsKey(userid))
                 {
                     _ConnectionsMap.Add(userid, Context.ConnectionId);
-                    await Clients.All.SendAsync("LoginMessage", userid);
+                    await Clients.All.SendAsync("LoginMessage", _ConnectionsMap);
                     return true;
                 }
             }
