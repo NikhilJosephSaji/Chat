@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Chat.Views"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" SizeChanged="Window_SizeChanged"
         Closed="Window_Closed"
         Title="N-Chat" Height="500" Width="900">
@@ -244,13 +245,13 @@
             <StackPanel Grid.Row="0" >
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height = "40" />
+                        <RowDefinition Height = "32" />
                         <RowDefinition Height = "30" />
                         <RowDefinition Height = "100*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0"  Orientation="Horizontal" Background="#FF4C7DB2">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Background="#FF4C7DB2">
                         <Label Content="Online Users" Width="190" FontFamily="Viner Hand ITC"
-                         Foreground="White" HorizontalContentAlignment="Center"
+                         Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                          FontSize="20"/>
                     </StackPanel>
                     <Grid Grid.Row="1">
@@ -260,10 +261,15 @@
                         <ListBox ItemsSource="{Binding OnlineUsers}" 
                                  ItemTemplate="{DynamicResource ParticipantsDataTemplate}"
                                  ItemContainerStyle="{DynamicResource ParticipantsListBoxItemStyle}"
-                                 SelectedItem="{Binding SelectedParticipant}"
+                                 SelectedItem="{Binding SelectedOnlineUser, UpdateSourceTrigger=PropertyChanged}"
                                  MaxHeight="{Binding LiistBoxHeight, UpdateSourceTrigger=PropertyChanged}"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding ListBoxUserSelected}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
                         </ListBox>
                     </StackPanel>
                 </Grid>
@@ -272,8 +278,8 @@
         <StackPanel Grid.Row="0" Grid.Column="1" >
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height = "42" />
-                    <RowDefinition Height = "30" />
+                    <RowDefinition Height = "35" />
+                    <RowDefinition Height = "50" />
                     <RowDefinition Height = "*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" HorizontalAlignment="Stretch" Background="#FF4C7DB2">
@@ -293,27 +299,27 @@
                             CornerRadius="50"
                             Margin="5 1 1 1"
                             Padding="1 1"
-                            Width="28"
-                            Height="28">
+                            Width="40"
+                            Height="40">
                         <Image
                                     Source="{Binding SelectedUserPhoto}"
                                     RenderOptions.BitmapScalingMode="HighQuality"
-                                    Width="20"
-                                    Height="20">
+                                    Width="32"
+                                    Height="32">
                         </Image>
                     </Border>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Width="120" Text="{Binding SelectedUser}" VerticalAlignment="Center" Foreground="#FF4C7DB2" FontSize="8" Margin="4 0"/>
+                        <TextBlock Width="120" Text="{Binding SelectedUser}" VerticalAlignment="Center" Foreground="#FF4C7DB2" FontSize="14" Margin="4 0"/>
                         <WrapPanel>
                             <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4 1 2 0"
-                             Width="4" Height="4">
+                             Width="6" Height="6">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
                                         <Setter Property="Fill" Value="#64DD17"/>
                                     </Style>
                                 </Ellipse.Style>
                             </Ellipse>
-                            <TextBlock Text="Online" VerticalAlignment="Center" Foreground="SlateGray" FontSize="6" Margin="0 0"/>
+                            <TextBlock Text="Online" VerticalAlignment="Center" Foreground="SlateGray" FontSize="10" Margin="0 0"/>
                         </WrapPanel>
                     </StackPanel>
                 </StackPanel>
