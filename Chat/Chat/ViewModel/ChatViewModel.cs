@@ -30,6 +30,8 @@ namespace Chat.ViewModel
         private HTTP http;
         private string _selectedUserPhoto;
         private string _selectedUser;
+        private OnlineUser _selectedOnlineUser;
+        private Visibility _isUserSelected;
 
         #endregion
 
@@ -93,21 +95,44 @@ namespace Chat.ViewModel
                 OnPropertyChanged();
             }
         }
-        
+
+        public OnlineUser SelectedOnlineUser
+        {
+            get { return _selectedOnlineUser; }
+            set
+            {
+                _selectedOnlineUser = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility IsUserSelected
+        {
+            get { return _isUserSelected; }
+            set
+            {
+                _isUserSelected = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Public Commands
 
         public ICommand LogoutCommand { get; set; }
+        public ICommand ListBoxUserSelected { get; set; }
         public Action Close { get; set; }
 
         #endregion
 
         public ChatViewModel(User user)
         {
+            IsUserSelected = Visibility.Collapsed;
             http = new HTTP();
             OnlineUsers = new ObservableCollection<OnlineUser>();
             LogoutCommand = new RelayCommand(Logout);
+            ListBoxUserSelected = new RelayCommand(ListBoxUserSelectionChanged);
             _defaultPhotoUrl = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + @"\images\avatar_circle.png";
             _loggedUser = user;
             SetLoggedUser();
@@ -148,7 +173,10 @@ namespace Chat.ViewModel
             {
                 if (userid != _loggedUser.Id)
                 {
-                    OnlineUsers.Remove(OnlineUsers.FirstOrDefault(x => x.Id == userid));
+                    var user = OnlineUsers.FirstOrDefault(x => x.Id == userid);
+                    if (user == SelectedOnlineUser)
+                        IsUserSelected = Visibility.Collapsed;
+                    OnlineUsers.Remove(user);
                 }
             });
 
@@ -168,10 +196,20 @@ namespace Chat.ViewModel
             new LoginView().Show();
             Close?.Invoke();
         }
-        
+
         public async Task LogoutUser()
         {
             await connection.InvokeAsync<bool>("LogOut", _loggedUser.Id);
+        }
+
+        private void ListBoxUserSelectionChanged(object value)
+        {
+            if (SelectedOnlineUser != null)
+            {
+                IsUserSelected = Visibility.Visible;
+                SelectedUser = SelectedOnlineUser.Name;
+                SelectedUserPhoto = SelectedOnlineUser.Photo;
+            }
         }
     }
 }
