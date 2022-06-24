@@ -233,7 +233,7 @@
                 </Grid>
             </Grid>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding IsOriginNative}" Value="True">
+                <DataTrigger Binding="{Binding IsNativeSender}" Value="True">
                     <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right"/>
                     <Setter TargetName="MessageBorder" Property="Margin" Value="0,0,10,10"/>
                     <Setter TargetName="MessageBorder" Property="Background" Value="#BBDEFB"/>
