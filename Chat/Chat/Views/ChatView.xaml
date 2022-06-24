@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Chat.Views"
+        xmlns:utils="clr-namespace:Chat.Helper"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" SizeChanged="Window_SizeChanged"
         Closed="Window_Closed"
@@ -190,8 +191,8 @@
                             </Ellipse.Fill>
                         </Ellipse>
                     </Border>
-                    <Border Name="MessageBorder" Grid.Column="1" MinHeight="40" MinWidth="180"  MaxWidth="290" BorderThickness="1" Background="#EFEBE9" 
-                    Margin="5,0,60,10" BorderBrush="#BCAAA4" CornerRadius="4" SnapsToDevicePixels="True"
+                    <Border Name="MessageBorder" Grid.Column="1" MinHeight="40" MinWidth="250"  MaxWidth="290" BorderThickness="1" Background="#EFEBE9" 
+                    Margin="5,0,0,10" BorderBrush="#BCAAA4" CornerRadius="4" SnapsToDevicePixels="True"
                     HorizontalAlignment="Left">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -318,7 +319,7 @@
                     Cursor="Hand"
                     HorizontalAlignment="Right"
                     Background="#f2f2f2"
-                    Width="45"
+                    Width="45" Command="{Binding SendCommand}"
                     Height="50">
                 <Image Source="../Images/send.png" Width="25" Height="28"></Image>
             </Button>
@@ -328,7 +329,7 @@
                      BorderThickness="0 1 0 0"
                      Tag="What's on your mind?"
                      VerticalContentAlignment="Center"
-                     FontSize="14"
+                     FontSize="14" Text="{Binding MessageContent}"
                      Padding="10 0" >
 
             </TextBox>
@@ -415,11 +416,21 @@
                         </WrapPanel>
                     </StackPanel>
                 </StackPanel>
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="2" x:Name="MessageCenter">
                     <ItemsControl x:Name="MessagesItemsCtrl" Grid.Column="1" Margin="0,5,0,0" 
-                      ItemsSource="{Binding OnlineUsers.UserChats}" 
+                      ItemsSource="{Binding Chat}" 
                       ItemTemplate="{DynamicResource MessagesDataTemplate}"
                       ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <i:Interaction.Behaviors>
+                            <utils:BringNewItemIntoViewBehavior/>
+                        </i:Interaction.Behaviors>
+                        <ItemsControl.Template>
+                            <ControlTemplate TargetType="ItemsControl">
+                                <ScrollViewer>
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
                     </ItemsControl>
                 </Grid>
             </Grid>
