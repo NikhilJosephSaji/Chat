@@ -32,6 +32,9 @@ namespace Chat.ViewModel
         private string _selectedUser;
         private OnlineUser _selectedOnlineUser;
         private Visibility _isUserSelected;
+        private string _messageContent;
+        private Dictionary<string, ObservableCollection<UserChat>> userChats;
+        private ObservableCollection<UserChat> _chat;
 
         #endregion
 
@@ -116,6 +119,25 @@ namespace Chat.ViewModel
             }
         }
 
+        public string MessageContent
+        {
+            get { return _messageContent; }
+            set
+            {
+                _messageContent = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<UserChat> Chat
+        {
+            get { return _chat; }
+            set
+            {
+                _chat = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Public Commands
@@ -123,6 +145,7 @@ namespace Chat.ViewModel
         public ICommand LogoutCommand { get; set; }
         public ICommand ListBoxUserSelected { get; set; }
         public Action Close { get; set; }
+        public ICommand SendCommand { get; set; }
 
         #endregion
 
@@ -131,6 +154,9 @@ namespace Chat.ViewModel
             IsUserSelected = Visibility.Collapsed;
             http = new HTTP();
             OnlineUsers = new ObservableCollection<OnlineUser>();
+            userChats = new Dictionary<string, ObservableCollection<UserChat>>();
+            Chat = new ObservableCollection<UserChat>();
+            SendCommand = new RelayCommand(SendBtnClicked);
             LogoutCommand = new RelayCommand(Logout);
             ListBoxUserSelected = new RelayCommand(ListBoxUserSelectionChanged);
             _defaultPhotoUrl = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + @"\images\avatar_circle.png";
@@ -145,9 +171,25 @@ namespace Chat.ViewModel
                         .WithUrl(ChatConstants.URLCHAT)
                         .WithAutomaticReconnect()
                         .Build();
-            connection.On<string, string>("ReceiveMessage", (user, message) =>
+            connection.On<string, string>("ReceiveCallerMessage", (user, message) =>
             {
-
+                var userchat = new UserChat();
+                userchat.Message = message;
+                userchat.Author = user;
+                userchat.ChatUserImage = _defaultPhotoUrl;
+                userchat.IsNativeSender = true;
+                var privatechat = userChats[user];
+                privatechat.Add(userchat);
+                Chat = userChats[user];
+            });
+            connection.On<string, string>("ReceiveClientMessage", (user, message) =>
+            {
+                var userchat = new UserChat();
+                userchat.Message = message;
+                userchat.Author = user;
+                userchat.ChatUserImage = _defaultPhotoUrl;
+                var privatechat = userChats[user];
+                privatechat.Add(userchat);
             });
             connection.On<Dictionary<string, string>>("LoginMessage", async (users) =>
             {
@@ -155,6 +197,8 @@ namespace Chat.ViewModel
                 var url = ChatConstants.HTTPURL + ChatConstants.GetUser;
                 foreach (var user in userlist)
                 {
+                    if (!userChats.ContainsKey(user))
+                        userChats.Add(user, new ObservableCollection<UserChat>());
                     if (user != _loggedUser.Id)
                     {
                         var isUserAvail = OnlineUsers.Any(x => x.Id == user);
@@ -167,7 +211,6 @@ namespace Chat.ViewModel
                         }
                     }
                 }
-
             });
             connection.On<string>("LogoutMessage", (userid) =>
             {
@@ -177,6 +220,7 @@ namespace Chat.ViewModel
                     if (user == SelectedOnlineUser)
                         IsUserSelected = Visibility.Collapsed;
                     OnlineUsers.Remove(user);
+                    userChats.Remove(user.Id);
                 }
             });
 
@@ -209,7 +253,13 @@ namespace Chat.ViewModel
                 IsUserSelected = Visibility.Visible;
                 SelectedUser = SelectedOnlineUser.Name;
                 SelectedUserPhoto = SelectedOnlineUser.Photo;
+                Chat = userChats[SelectedOnlineUser.Id];
             }
+        }
+        private async void SendBtnClicked(object value)
+        {
+            if (SelectedOnlineUser != null)
+                await connection.InvokeAsync("SendMessage", SelectedOnlineUser.Id, _loggedUser.Id, MessageContent);
         }
     }
 }
