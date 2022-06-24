@@ -172,6 +172,98 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <DataTemplate x:Key="MessagesDataTemplate">
+            <Grid>
+                <Grid x:Name="MessageGrid" HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="FirstGrid" Width="45"/>
+                        <ColumnDefinition x:Name="SecondGrid" Width="310"/>
+                    </Grid.ColumnDefinitions>
+                    <Border  x:Name="ChatUserImage" Grid.Column="0" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="1"
+                    CornerRadius="50"
+                    Margin="5,-10,0,0"
+                    Width="40"
+                    Height="40">
+                        <Ellipse Height="38" Width="38">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding ChatUserImage}"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </Border>
+                    <Border Name="MessageBorder" Grid.Column="1" MinHeight="40" MinWidth="180"  MaxWidth="290" BorderThickness="1" Background="#EFEBE9" 
+                    Margin="5,0,60,10" BorderBrush="#BCAAA4" CornerRadius="4" SnapsToDevicePixels="True"
+                    HorizontalAlignment="Left">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition Height="5"/>
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="ImageMessageGrid" Margin="6,6,6,5">
+                                <Grid.OpacityMask>
+                                    <VisualBrush Visual="{Binding ElementName=ClipBorder}"/>
+                                </Grid.OpacityMask>
+                                <Border x:Name="ClipBorder" CornerRadius="3" Background="White"/>
+                                <Image Stretch="UniformToFill" Cursor="Hand" 
+                               ToolTip="Click to open image in your default image viewer"
+                               Source="{Binding Picture}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseLeftButtonUp">
+                                            <i:InvokeCommandAction
+                                        Command="{Binding DataContext.OpenImageCommand, 
+                                        RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Image>
+                            </Grid>
+                            <Grid Grid.Row="0">
+                                <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Stretch"
+                               Margin="5,1,0,0" FontWeight="Bold"
+                               Text="{Binding Author}"/>
+                                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Stretch"
+                               Margin="0,2,5,0" FontSize="10" Opacity="0.8"
+                               Text="{Binding Time, StringFormat={}{0:dd MMM yyyy HH MM tt}}"/>
+                            </Grid>
+                            <TextBlock x:Name="MessageTxtBlock" Grid.Row="1" Margin="7,5,7,0" TextWrapping="Wrap" 
+                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                               Text="{Binding Message}"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsOriginNative}" Value="True">
+                    <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right"/>
+                    <Setter TargetName="MessageBorder" Property="Margin" Value="0,0,10,10"/>
+                    <Setter TargetName="MessageBorder" Property="Background" Value="#BBDEFB"/>
+                    <Setter TargetName="MessageBorder" Property="BorderBrush" Value="#64B5F6"/>
+                    <Setter TargetName="ChatUserImage" Property="Grid.Column" Value="1"/>
+                    <Setter TargetName="MessageBorder" Property="Grid.Column" Value="0"/>
+                    <Setter TargetName="FirstGrid" Property="Width" Value="310"/>
+                    <Setter TargetName="SecondGrid" Property="Width" Value="45"/>
+                    <Setter TargetName="MessageGrid" Property="HorizontalAlignment" Value="Right"/>
+                    <Setter TargetName="ChatUserImage" Property="Margin" Value="0,-10,5,0"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Picture}" Value="{x:Null}">
+                    <Setter TargetName="ImageMessageGrid" Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Message}" Value="{x:Null}">
+                    <Setter TargetName="MessageTxtBlock" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="MessageBorder" Property="MaxWidth" Value="320"/>
+                </DataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Message}" Value="{x:Null}"/>
+                        <Condition Binding="{Binding IsOriginNative}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter TargetName="MessageBorder" Property="Margin" Value="0,0,10,10"/>
+                        <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right"/>
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -323,6 +415,13 @@
                         </WrapPanel>
                     </StackPanel>
                 </StackPanel>
+                <Grid Grid.Row="2">
+                    <ItemsControl x:Name="MessagesItemsCtrl" Grid.Column="1" Margin="0,5,0,0" 
+                      ItemsSource="{Binding OnlineUsers.UserChats}" 
+                      ItemTemplate="{DynamicResource MessagesDataTemplate}"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    </ItemsControl>
+                </Grid>
             </Grid>
         </StackPanel>
     </Grid>
