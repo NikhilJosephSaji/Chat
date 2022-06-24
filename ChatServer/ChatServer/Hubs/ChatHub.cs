@@ -48,13 +48,13 @@ namespace ChatServer.Hubs
             return true;
         }
 
-        public async void SendMessage(string userid, string message)
+        public async void SendMessage(string touserid, string fromuserid, string message)
         {
-            if (_ConnectionsMap.ContainsKey(userid))
+            if (_ConnectionsMap.ContainsKey(touserid))
             {
-                var conectionid = _ConnectionsMap[userid];
-                await Clients.Client(conectionid).SendAsync("ReceiveMessage", userid, message);
-                await Clients.Caller.SendAsync("ReceiveMessage", userid, message);
+                var conectionid = _ConnectionsMap[touserid];
+                await Clients.Client(conectionid).SendAsync("ReceiveClientMessage", touserid, message);
+                await Clients.Caller.SendAsync("ReceiveCallerMessage", touserid , message);
             }
         }
     }
